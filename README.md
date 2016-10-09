@@ -24,9 +24,9 @@
 
 ## 运行效果截图
 * 单选非必填
-![](screenshot/single-select.png)
+![单选非必填](screenshot/single-select.png)
 * 单选必填
-![](screenshot/single-select-required.png)
+![单选必填](screenshot/single-select-required.png)
 * 多选
-![](screenshot/multi-select.png)
+![多选](screenshot/multi-select.png)
 
