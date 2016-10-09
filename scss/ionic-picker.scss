@@ -1,0 +1,267 @@
+@import "../www/lib/ionic/scss/mixins";
+
+/**
+  1. rem的大小按照 1rem=16px 计算
+**/
+
+$picker-modal-bg: #cfd5da !default;
+$picker-modal-height: 16.25rem !default;
+$picker-modal-z-index: 11500 !default;
+$picker-modal-transition-time: 400ms !default;
+
+$picker-item-height: 36px !default;
+$picker-item-color: #999 !default;
+$picker-item-font-size: 1.5rem !default;
+$picker-item-select-color: #3d4145 !default;
+
+$picker-multi-item-font-color: $picker-item-select-color !default;
+$picker-multi-item-select-color: #0894ec !default;
+$picker-multi-item-select-tick-height: 7px !default;
+$picker-multi-item-select-tick-width: $picker-multi-item-select-tick-height*2 !default;
+
+// picker modal toolbar
+$picker-modal-toolbar-color: #0894ec !default;
+$picker-modal-toolbar-height: 2.75rem !default;
+
+.select-value {
+  @include flex(1);
+  text-align: right;
+  padding-right: 1rem;
+}
+.item-select:after {
+  right: 0 !important;
+}
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+}
+
+@mixin overflow-ellipse() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// picker-modal的遮罩，透明
+.picker-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 11;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.picker-modal {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: $picker-modal-height;
+  z-index: $picker-modal-z-index;
+  display: none;
+  background: $picker-modal-bg;
+  @include transition-property(transform);
+  @include transition-timing-function(ease-in-out);
+  @include translate3d(0, 100%, 0);
+}
+
+.picker-modal.modal-in,
+.picker-modal.modal-out {
+  @include transition-duration($picker-modal-transition-time);
+}
+
+.picker-modal.modal-in {
+  @include translate3d(0, 0, 0);
+}
+
+.picker-modal.modal-out {
+  @include translate3d(0, 100%, 0);
+}
+
+.picker-modal * {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+}
+
+.picker-modal-backdrop.active .picker-modal {
+  display: block;
+}
+
+// picker modal tools bar
+.picker-modal .picker-header {
+  @include display-flex();
+  @include justify-content(center);
+  height: $picker-modal-toolbar-height;
+  background-color: #f7f7f8;
+
+  .picker-tools-button {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    color: $picker-modal-toolbar-color;
+    //width: 4rem;
+  }
+  .title {
+    font-size: 16px;
+    margin: 0;
+    line-height: $picker-modal-toolbar-height;
+    text-align: center;
+    @include flex(1);
+  }
+}
+
+// 下拉选择的列
+.picker-items {
+  @include display-flex();
+  @include justify-content(center);
+  position: relative;
+
+  padding: 0;
+  text-align: right;
+  font-size: $picker-item-font-size;
+  height: $picker-modal-height - $picker-modal-toolbar-height;
+
+  mask-image: linear-gradient(to top, transparent, transparent 5%, white 20%, white 80%, transparent 95%, transparent);
+  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, white 20%, white 80%, transparent 95%, transparent);
+  -webkit-mask-box-image: linear-gradient(to top, transparent, transparent 5%, white 20%, white 80%, transparent 95%, transparent);
+}
+
+// 每列
+.picker-items-col {
+  overflow: hidden;
+  position: relative;
+  max-height: 100%;
+}
+
+.picker-col-wrapper {
+  @include transition(300ms);
+  @include transition-timing-function(ease-out);
+  //-webkit-transition: 300ms;
+  //transition: 300ms;
+  //-webkit-transition-timing-function: ease-out;
+  //transition-timing-function: ease-out;
+}
+
+// 每列中的每个元素
+.picker-item {
+  height: $picker-item-height;
+  line-height: $picker-item-height;
+  padding: 0 10px;
+  color: $picker-item-color;
+
+  position: relative;
+
+  left: 0;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  @include overflow-ellipse();
+  @include transition(300ms);
+
+  text-align: center;
+
+  &.picker-item-far {
+    pointer-events: none;
+  }
+}
+
+.picker-item.picker-selected {
+  color: $picker-item-select-color;
+  font-size: $picker-item-font-size * 1.01;
+  @include translate3d(0, 0, 0);
+  @include rotate(0deg);
+}
+
+.picker-center-highlight {
+  height: $picker-item-height;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 50%;
+  margin-top: -$picker-item-height/2;
+  pointer-events: none;
+}
+
+.picker-center-highlight:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: auto;
+  right: auto;
+  height: 1px;
+  width: 100%;
+  background-color: #a8abb0;
+  display: block;
+  z-index: 15;
+  -webkit-transform-origin: 50% 0%;
+  transform-origin: 50% 0%;
+}
+
+.picker-center-highlight:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: auto;
+  top: auto;
+  height: 1px;
+  width: 100%;
+  background-color: #a8abb0;
+  display: block;
+  z-index: 15;
+  -webkit-transform-origin: 50% 0%;
+  transform-origin: 50% 0%;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+  .picker-center-highlight:before, .picker-center-highlight:after {
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+  }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 3) {
+  .picker-center-highlight:before, .picker-center-highlight:after {
+    -webkit-transform: scaleY(0.33);
+    transform: scaleY(0.33);
+  }
+}
+
+// 多选
+.picker-modal.multiple-select {
+  .picker-item {
+    position: relative;
+    color: $picker-multi-item-font-color !important;
+  }
+  // 多选对勾
+  .picker-item.selected {
+    color: $picker-multi-item-select-color !important;
+    &:before {
+      content: "";
+      position: absolute;
+      z-index: 10;
+
+      left: 1rem;
+      bottom: 0;
+      top: 0;
+      margin: auto;
+
+      height: $picker-multi-item-select-tick-height;
+      width: $picker-multi-item-select-tick-width;
+
+      background-color: transparent;
+      border-left: 2px solid $picker-multi-item-select-color;
+      border-bottom: 2px solid $picker-multi-item-select-color;
+
+      @include rotate(-45deg);
+      @include transform-origin(center, center);
+    }
+  }
+}

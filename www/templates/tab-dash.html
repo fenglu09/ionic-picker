@@ -1,0 +1,18 @@
+<ion-view view-title="Dashboard">
+  <ion-content class="padding">
+
+    <ionic-picker label="Demo(多选)"
+                    multiple="true"
+                    view-value-property="name"
+                    picker-data="pickerData" ng-model="param.selectMultiData"></ionic-picker>
+
+    <ionic-picker label="Demo(必填)"
+                    view-value-property="name"
+                    required="true"
+                    picker-data="pickerData1" ng-model="param.selectData"></ionic-picker>
+
+    <ionic-picker label="Demo(选填)"
+                    view-value-property="name"
+                    picker-data="pickerData2" ng-model="param.selectData1"></ionic-picker>
+  </ion-content>
+</ion-view>
