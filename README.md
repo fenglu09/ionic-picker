@@ -23,10 +23,10 @@
 * `required`: (选填) 是否是必填，只要写了这个属性，就表示是必填
 
 ## 运行效果截图
-单选非必填
+* 单选非必填
 ![](screenshot/single-select.png)
-单选必填
+* 单选必填
 ![](screenshot/single-select-required.png)
-多选
+* 多选
 ![](screenshot/multi-select.png)
 
