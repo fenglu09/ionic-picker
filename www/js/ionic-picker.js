@@ -189,35 +189,48 @@ PickerModule.directive('ionicPicker', ['$ionPicker', 'PickerUtil', function ($io
             scope.isItemObject = angular.isObject(scope.pickerData[0]);
             scope.viewValueProperty = attr.viewValueProperty || 'name';
 
-            if (scope.multiple) {
-                // 多选
-                scope.selectData = scope.selectData ? scope.selectData : [];
-                if (scope.selectData.length !== 1) {
-                    scope.displayValue = '选择了' + scope.selectData.length + '项';
+            function updateViewValue() {
+                if (scope.multiple) {
+                    // 多选
+                    scope.selectData = scope.selectData ? scope.selectData : [];
+                    // if (scope.selectData.length !== 1) {
+                    //     scope.displayValue = '选择了' + scope.selectData.length + '项';
+                    // } else {
+                    //     scope.displayValue = scope.isItemObject ? scope.selectData[scope.viewValueProperty] : scope.selectData;
+                    // }
+                    scope.displayValue = scope.selectData.length == 1 ? (scope.isItemObject ?
+                        scope.selectData[0][scope.viewValueProperty] : scope.selectData[0]) : '选择了' + scope.selectData.length + '项';
                 } else {
-                    scope.displayValue = scope.isItemObject ? scope.selectData[scope.viewValueProperty] : scope.selectData;
-                }
-            } else {
-                // 单选默认第一个
-                if (scope.selectData) {
-                    scope.displayValue = scope.isItemObject ? scope.selectData[scope.viewValueProperty] : scope.selectData;
-                } else {
-                    if (!scope.required) {
-                        // 如果不是必填
-                        var temp = {};
-                        if (scope.isItemObject) {
-                            temp[scope.viewValueProperty] = '请选择'
-                        } else {
-                            temp = '请选择';
-                        }
-                        scope.pickerData.unshift(temp);
+                    // 单选默认第一个
+                    if (scope.selectData) {
+                        scope.displayValue = scope.isItemObject ? scope.selectData[scope.viewValueProperty] : scope.selectData;
                     } else {
-                        scope.selectData = scope.pickerData[0];
+                        if (!scope.required) {
+                            // 如果不是必填
+                            var temp = {};
+                            if (scope.isItemObject) {
+                                temp[scope.viewValueProperty] = '请选择'
+                            } else {
+                                temp = '请选择';
+                            }
+                            if (temp !== scope.pickerData[0]) {
+                                scope.pickerData.unshift(temp);
+                            }
+                        } else {
+                            scope.selectData = scope.pickerData[0];
+                        }
+                        scope.displayValue = scope.isItemObject ? scope.pickerData[0][scope.viewValueProperty] : scope.pickerData[0];
                     }
-                    scope.displayValue = scope.isItemObject ? scope.pickerData[0][scope.viewValueProperty] : scope.pickerData[0];
                 }
             }
 
+            scope.$watch('selectData', function(newValue) {
+                if (newValue == "请选择") {
+                    scope.selectData = undefined;
+                    return;
+                }
+                updateViewValue();
+            }, true);
 
             scope.preValue = '';
             // 绑定点击事件
@@ -235,47 +248,49 @@ PickerModule.directive('ionicPicker', ['$ionPicker', 'PickerUtil', function ($io
                         onChange: setValue
                     }],
                     required: scope.required,
-                    multiple: scope.multiple
+                    multiple: scope.multiple,
+                    onResetClick: function() {
+                        setValue(scope.preValue, true);
+                    }
                 };
-                scope.$on('picker.cancel', function (e) {
-                    setValue(scope.preValue, true);
-                });
-                function setValue(newValue, isReset) {
-                    scope.$apply(function () {
-
-                        if (scope.multiple) {
-                            // 多选
-                            if (isReset) {
-                                scope.selectData = angular.copy(scope.preValue);
-                            } else {
-                                var index = PickerUtil.getIndex(newValue, scope.selectData);
-
-                                if (index > -1) {
-                                    // 已经存在，则删除
-                                    // console.log(scope.selectData.splice(index, 1));
-                                    scope.selectData.splice(index, 1);
-                                } else {
-                                    // 不存在，添加到数组里面
-                                    scope.selectData.push(newValue);
-                                }
-                            }
-
-                            scope.displayValue = scope.selectData.length == 1 ? (scope.isItemObject ?
-                                scope.selectData[0][scope.viewValueProperty] : scope.selectData[0]) : '选择了' + scope.selectData.length + '项';
-                        } else {
-                            var tempDisplayVal = scope.isItemObject ? newValue[scope.viewValueProperty] : newValue;
-                            scope.displayValue = tempDisplayVal;
-                            scope.selectData = newValue;
-                            if (tempDisplayVal == '请选择') {
-                                scope.selectData = undefined;
-                            }
-                        }
-                    });
-                }
-
                 showPicker(options);
                 e.stopPropagation();
             });
+
+            function setValue(newValue, isReset) {
+                scope.$apply(function () {
+
+                    if (scope.multiple) {
+                        // 多选
+                        if (isReset) {
+                            scope.selectData = angular.copy(scope.preValue);
+                        } else {
+                            var index = PickerUtil.getIndex(newValue, scope.selectData);
+
+                            if (index > -1) {
+                                // 已经存在，则删除
+                                // console.log(scope.selectData.splice(index, 1));
+                                scope.selectData.splice(index, 1);
+                            } else {
+                                // 不存在，添加到数组里面
+                                scope.selectData.push(newValue);
+                            }
+                        }
+
+                        // scope.displayValue = scope.selectData.length == 1 ? (scope.isItemObject ?
+                        //     scope.selectData[0][scope.viewValueProperty] : scope.selectData[0]) : '选择了' + scope.selectData.length + '项';
+
+                    } else {
+                        // var tempDisplayVal = scope.isItemObject ? newValue[scope.viewValueProperty] : newValue;
+                        // scope.displayValue = tempDisplayVal;
+                        scope.selectData = newValue;
+                        // if (tempDisplayVal == '请选择') {
+                        //     scope.selectData = undefined;
+                        // }
+                    }
+                    // updateViewValue();
+                });
+            }
 
             function showPicker(options) {
                 $ionPicker.show(options);
@@ -637,14 +652,13 @@ PickerModule.factory('$ionPicker', ['$rootScope', '$compile', '$document', '$ani
                     // 解绑点击事件
                     $body.off('click', removeOnBackdropClick);
                     var okbtn = angular.element(element[0].querySelector('.ok-button'));
+                    var cancelBtn = angular.element(element[0].querySelector('.cancel-button'));
                     okbtn.off('click', scope.removePicker);
+                    cancelBtn.off('click', onCancelBtnClick);
                     scope.$destroy();
                     element.remove();
                 }, 400);
             };
-            scope.$on('picker.cancel', function (e) {
-                scope.removePicker();
-            });
             scope.showPicker = function (done) {
                 if (scope.removed) return;
 
@@ -659,7 +673,16 @@ PickerModule.factory('$ionPicker', ['$rootScope', '$compile', '$document', '$ani
             };
             function bindOkBtnEvent() {
                 var okbtn = angular.element(element[0].querySelector('.ok-button'));
-                okbtn.on('click', scope.removePicker)
+                var cancelBtn = angular.element(element[0].querySelector('.cancel-button'));
+                okbtn.on('click', scope.removePicker);
+                cancelBtn.on('click', onCancelBtnClick);
+            }
+
+            function onCancelBtnClick() {
+                if (scope.onResetClick) {
+                    scope.onResetClick();
+                }
+                scope.removePicker();
             }
 
             function bindBackdropEvent() {

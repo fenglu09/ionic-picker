@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope) {
+.controller('DashCtrl', function($scope, $http) {
   $scope.pickerData = [];
   for(var i = 0; i < 50; i ++) {
     $scope.pickerData.push({
@@ -16,6 +16,20 @@ angular.module('starter.controllers', [])
     selectData1: null,
     selectMultiData: null
   };
+
+  $scope.getData = function () {
+      $http.get('data/data.json').then(function(resp) {
+          console.log(resp);
+          $scope.param.selectData = resp.data.mobile;
+          $scope.param.selectData1 = resp.data.mobile;
+          $scope.param.selectMultiData = resp.data.multi;
+      });
+  };
+  $scope.$on('$ionicView.beforeEnter', function() {
+
+      $scope.getData();
+  });
+
 })
 
 .controller('ChatsCtrl', function($scope, Chats) {
