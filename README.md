@@ -14,7 +14,7 @@
                     picker-data="pickerData" ng-model="param.selectMultiData">
 </ionic-picker>
 ```
-###属性说明
+### 属性说明
 * `label`: `String` (必填)该多选的标签， 在`input-label`中显示.(必填)
 * `multiple`: `Boolean` (必填) 是否多选
 * `picker-data`: `Array` (必填) 用于选择的数据。
